@@ -3,6 +3,6 @@ import './Bars.css';
 
 export default function Bars() {
     return (
-        <div className={'main-container'}/>
+        <div className={'bar-container'}>bars</div>
     );
 }

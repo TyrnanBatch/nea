@@ -1,5 +1,8 @@
-.main-container {
+.bar-container {
   width: 100%;
   height: 100%;
   background: blue;
+  grid-column-start: 1;
+  grid-column-end: 2;
 }
+
