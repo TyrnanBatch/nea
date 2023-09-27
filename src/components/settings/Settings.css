@@ -1,0 +1,14 @@
+.setting-container {
+  border: 1px solid #000000;
+  background-color: #ffa8a8;
+  display: flex;
+  justify-content: center;
+}
+
+.data-input {
+  height: 25px;
+  width: 90%;
+  margin-top: 5%;
+  font-size: 20px;
+  font-weight: lighter;
+}
