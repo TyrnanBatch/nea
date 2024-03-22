@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify
 
-from bubble_sort import BubbleSort
-from insertion_sort import InsertionSort
-from merge_sort import MergeSort
+from sorting_algorithms.bubble_sort import BubbleSort
+from sorting_algorithms.insertion_sort import InsertionSort
+from sorting_algorithms.merge_sort import MergeSort
 
 app = Flask(__name__)
 
