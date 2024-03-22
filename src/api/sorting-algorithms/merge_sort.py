@@ -22,7 +22,7 @@ class MergeSort(SortingAlgorithm):
     @classmethod
     def sort(cls, data):
         if len(data) <= 1:
-            return [data]  # Return a 3D array with a single stage for base case
+            return [data]
 
         mid = len(data) // 2
         left = data[:mid]
@@ -30,12 +30,12 @@ class MergeSort(SortingAlgorithm):
 
         left_stages = cls.sort(left)
         right_stages = cls.sort(right)
-        merged_stages = []
+        stages = []
 
-        for l, r in zip(left_stages, right_stages):
-            merged = cls.merge(l, r)
-            merged_stages.append(merged)
-        merged_stages.extend(left_stages[len(right_stages):])
-        merged_stages.extend(right_stages[len(left_stages):])
+        for i, r in zip(left_stages, right_stages):
+            merged = cls.merge(i, r)
+            stages.append(merged)
+        stages.extend(left_stages[len(right_stages):])
+        stages.extend(right_stages[len(left_stages):])
 
-        return merged_stages
+        return stages
