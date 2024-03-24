@@ -10,7 +10,7 @@ If cloned you will need to run:
 see the current state of the site
 
 ### `npm run api`
- - which will put the python api up so the algorithms can be accessed and used
+ - which will put the python api up on [http://localhost:5000](http://localhost:5000) so the algorithms can be accessed and used
 
 or you can run
 
