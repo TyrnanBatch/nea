@@ -1,6 +1,6 @@
 import './Home.css';
 
-function Home() {
+const Home = () => {
     return (
         <div>
             Home Page
