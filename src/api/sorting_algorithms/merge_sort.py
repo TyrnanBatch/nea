@@ -3,7 +3,7 @@ from .sort_algorithm import SortingAlgorithm
 
 class MergeSort(SortingAlgorithm):
     @staticmethod
-    def merge(left, right):
+    def _merge(left, right):
         result = []
         left_index, right_index = 0, 0
 

@@ -1,6 +1,5 @@
 from .sort_algorithm import SortingAlgorithm
 
-
 class InsertionSort(SortingAlgorithm):
     @classmethod
     def sort(cls, data):
@@ -9,7 +8,7 @@ class InsertionSort(SortingAlgorithm):
             key = data[i]
             j = i - 1
             while j >= 0 and key < data[j]:
-                cls.swap(data, j + 1, j)
+                SortingAlgorithm.swap(data, j + 1, j)  # Assuming swap is a static method in SortingAlgorithm
                 stages.append(data.copy())
                 j -= 1
             data[j + 1] = key

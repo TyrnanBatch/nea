@@ -1,4 +1,3 @@
-
 class SortingAlgorithm:
     @staticmethod
     def swap(arr, i, j):
