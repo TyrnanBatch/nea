@@ -8,8 +8,8 @@ class InsertionSort(SortingAlgorithm):
             key = data[i]
             j = i - 1
             while j >= 0 and key < data[j]:
-                SortingAlgorithm.swap(data, j + 1, j)  # Assuming swap is a static method in SortingAlgorithm
-                stages.append(data.copy())
+                data[j + 1] = data[j]
                 j -= 1
             data[j + 1] = key
+            stages.append(data.copy())
         return stages
