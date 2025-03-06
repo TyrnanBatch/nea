@@ -1,41 +1,44 @@
-from .sort_algorithm import SortingAlgorithm
+from sort_algorithm import SortingAlgorithm
 
 
 class MergeSort(SortingAlgorithm):
-    @staticmethod
-    def _merge(left, right):
-        result = []
-        left_index, right_index = 0, 0
-
-        while left_index < len(left) and right_index < len(right):
-            if left[left_index] < right[right_index]:
-                result.append(left[left_index])
-                left_index += 1
-            else:
-                result.append(right[right_index])
-                right_index += 1
-
-        result.extend(left[left_index:])
-        result.extend(right[right_index:])
-        return result
-
     @classmethod
     def sort(cls, data):
-        if len(data) <= 1:
-            return [data]
+        def _merge_and_track_stages(arr, left, mid, right, stages):
+            left_half = arr[left:mid + 1]
+            right_half = arr[mid + 1:right + 1]
 
-        mid = len(data) // 2
-        left = data[:mid]
-        right = data[mid:]
+            i = j = 0
+            k = left
 
-        left_stages = cls.sort(left)
-        right_stages = cls.sort(right)
-        stages = []
+            while i < len(left_half) and j < len(right_half):
+                if left_half[i] < right_half[j]:
+                    arr[k] = left_half[i]
+                    i += 1
+                else:
+                    arr[k] = right_half[j]
+                    j += 1
+                k += 1
 
-        for i, r in zip(left_stages, right_stages):
-            merged = cls.merge(i, r)
-            stages.append(merged)
-        stages.extend(left_stages[len(right_stages):])
-        stages.extend(right_stages[len(left_stages):])
+            while i < len(left_half):
+                arr[k] = left_half[i]
+                i += 1
+                k += 1
 
+            while j < len(right_half):
+                arr[k] = right_half[j]
+                j += 1
+                k += 1
+
+            stages.append(arr.copy())
+
+        def _merge_sort(arr, left, right, stages):
+            if left < right:
+                mid = (left + right) // 2
+                _merge_sort(arr, left, mid, stages)
+                _merge_sort(arr, mid + 1, right, stages)
+                _merge_and_track_stages(arr, left, mid, right, stages)
+
+        stages = [data.copy()]
+        _merge_sort(data, 0, len(data) - 1, stages)
         return stages
