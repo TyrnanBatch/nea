@@ -1,4 +1,4 @@
-from sort_algorithm import SortingAlgorithm
+from .sort_algorithm import SortingAlgorithm
 
 
 class MergeSort(SortingAlgorithm):
