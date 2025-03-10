@@ -1,0 +1,5 @@
+.bar-container {
+    display: flex;
+    align-items: flex-end;
+    gap: 1px;
+}
