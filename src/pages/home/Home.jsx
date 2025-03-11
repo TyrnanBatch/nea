@@ -4,6 +4,7 @@ import BarContainer from "../../components/BarContainer/BarContainer";
 const Home = () => {
     const [stages, setStages] = useState([]);
     const [currentStep, setCurrentStep] = useState(0);
+    const [isPlaying, setIsPlaying] = useState(false);
 
     useEffect(() => {
         const fetchStages = async () => {
@@ -17,7 +18,7 @@ const Home = () => {
                             58, 36, 93, 17, 64, 30, 85, 48, 99, 2, 69, 22, 77, 39, 92, 15, 50, 81, 26, 61, 4, 35, 88,
                             20, 73, 46, 96, 11, 54, 83, 32, 70, 18, 57, 90, 6, 40, 75, 28, 62, 13, 47, 95, 24, 79, 33,
                             66, 1, 52, 86, 43, 100, 59, 65, 51],
-                        algorithms: "merge",
+                        algorithms: "insertion",
                     }),
                 });
                 const result = await response.json();
@@ -32,12 +33,15 @@ const Home = () => {
     }, []);
 
     useEffect(() => {
-        if (stages.length === 0) return;
+        if (stages.length === 0 || !isPlaying) {
+            return;
+        }
 
         const interval = setInterval(() => {
             setCurrentStep((prevStep) => {
                 if (prevStep >= stages.length - 1) {
                     clearInterval(interval);
+                    setIsPlaying(false);
                     return prevStep;
                 }
                 return prevStep + 1;
@@ -45,11 +49,42 @@ const Home = () => {
         }, 100);
 
         return () => clearInterval(interval);
-    }, [stages]);
+    }, [stages, isPlaying]);
+
+    const handlePlayPause = () => {
+        setIsPlaying(!isPlaying);
+    };
+
+    const handleStepForward = () => {
+        setCurrentStep((prevStep) => Math.min(prevStep + 1, stages.length - 1));
+    };
+
+    const handleStepBackward = () => {
+        setCurrentStep((prevStep) => Math.max(prevStep - 1, 0));
+    };
+
+    const handleReset = () => {
+        setCurrentStep(0);
+        setIsPlaying(false);
+    };
 
     return (
-        <div style={{display: "flex", justifyContent: "center", alignItems: "center", height: "100vh"}}>
+        <div style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh"
+        }}>
             <BarContainer data={stages[currentStep] || []} height="75%" width="75%"/>
+            <div style={{marginTop: "20px"}}>
+                <button onClick={handleReset} style={{margin: "5px"}}>Reset</button>
+                <button onClick={handleStepBackward} style={{margin: "5px"}}>Step Backward</button>
+                <button onClick={handlePlayPause} style={{margin: "5px"}}>
+                    {isPlaying ? "Pause" : "Play"}
+                </button>
+                <button onClick={handleStepForward} style={{margin: "5px"}}>Step Forward</button>
+            </div>
         </div>
     );
 };
