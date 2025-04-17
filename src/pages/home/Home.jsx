@@ -5,37 +5,39 @@ const Home = () => {
     const [stages, setStages] = useState([]);
     const [currentStep, setCurrentStep] = useState(0);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [speed, setSpeed] = useState(100);
+    const [count, setCount] = useState(100);
+    const [customInput, setCustomInput] = useState("");
 
-    useEffect(() => {
-        const fetchStages = async () => {
-            try {
-                const response = await fetch("http://localhost:5000/sort", {
-                    method: "POST",
-                    headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({
-                        input_data: [23, 56, 12, 87, 34, 78, 45, 91, 3, 67, 14, 98, 29, 71, 8, 42, 55, 19, 63, 80, 37,
-                            94, 5, 72, 16, 49, 84, 27, 60, 9, 31, 76, 44, 97, 21, 68, 38, 82, 53, 10, 25, 74, 41, 89, 7,
-                            58, 36, 93, 17, 64, 30, 85, 48, 99, 2, 69, 22, 77, 39, 92, 15, 50, 81, 26, 61, 4, 35, 88,
-                            20, 73, 46, 96, 11, 54, 83, 32, 70, 18, 57, 90, 6, 40, 75, 28, 62, 13, 47, 95, 24, 79, 33,
-                            66, 1, 52, 86, 43, 100, 59, 65, 51],
-                        algorithms: "insertion",
-                    }),
-                });
-                const result = await response.json();
-                setStages(result.stages || []);
-                setCurrentStep(0);
-            } catch (error) {
-                console.error("Error fetching sorting stages:", error);
-            }
-        };
+    const generateRandomData = (length) => {
+        return Array.from({length}, () => Math.floor(Math.random() * 100) + 1);
+    };
 
-        fetchStages();
-    }, []);
-
-    useEffect(() => {
-        if (stages.length === 0 || !isPlaying) {
-            return;
+    const fetchStages = async (data) => {
+        try {
+            const response = await fetch("http://localhost:5000/sort", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    input_data: data,
+                    algorithms: "insertion",
+                }),
+            });
+            const result = await response.json();
+            setStages(result.stages || []);
+            setCurrentStep(0);
+        } catch (error) {
+            console.error("Error fetching sorting stages:", error);
         }
+    };
+
+    useEffect(() => {
+        const randomData = generateRandomData(count);
+        fetchStages(randomData);
+    }, [count]);
+
+    useEffect(() => {
+        if (stages.length === 0 || !isPlaying) return;
 
         const interval = setInterval(() => {
             setCurrentStep((prevStep) => {
@@ -46,10 +48,10 @@ const Home = () => {
                 }
                 return prevStep + 1;
             });
-        }, 100);
+        }, speed);
 
         return () => clearInterval(interval);
-    }, [stages, isPlaying]);
+    }, [stages, isPlaying, speed]);
 
     const handlePlayPause = () => {
         setIsPlaying(!isPlaying);
@@ -68,22 +70,104 @@ const Home = () => {
         setIsPlaying(false);
     };
 
+    const handleSpeedChange = (event) => {
+        setSpeed(event.target.value);
+    };
+
+    const handleCountChange = (event) => {
+        setCount(parseInt(event.target.value));
+    };
+
+    const handleCustomInputChange = (event) => {
+        setCustomInput(event.target.value);
+    };
+
+    const handleCustomInputSubmit = () => {
+        const parsed = customInput
+            .split(",")
+            .map((n) => parseInt(n.trim()))
+            .filter((n) => !isNaN(n));
+        if (parsed.length > 0) {
+            setCount(parsed.length);
+            fetchStages(parsed);
+        }
+    };
+
+    const handleRandomize = () => {
+        const randomData = generateRandomData(count);
+        fetchStages(randomData);
+    };
+
+    const handleShuffleOrder = () => {
+        const currentData = stages[currentStep] || [];
+        const shuffled = [...currentData].sort(() => Math.random() - 0.5);
+        fetchStages(shuffled);
+    };
+
     return (
-        <div style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100vh"
-        }}>
+        <div
+            style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100vh",
+                fontFamily: "inherit",
+            }}
+        >
             <BarContainer data={stages[currentStep] || []} height="75%" width="75%"/>
-            <div style={{marginTop: "20px"}}>
+            <div
+                style={{
+                    marginTop: "20px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    flexWrap: "wrap",
+                    justifyContent: "center",
+                    fontFamily: "inherit",
+                }}
+            >
                 <button onClick={handleReset} style={{margin: "5px"}}>Reset</button>
                 <button onClick={handleStepBackward} style={{margin: "5px"}}>Step Backward</button>
                 <button onClick={handlePlayPause} style={{margin: "5px"}}>
                     {isPlaying ? "Pause" : "Play"}
                 </button>
                 <button onClick={handleStepForward} style={{margin: "5px"}}>Step Forward</button>
+
+                <label htmlFor="speedSlider" style={{marginLeft: "15px"}}>Speed:</label>
+                <input
+                    id="speedSlider"
+                    type="range"
+                    min="10"
+                    max="2000"
+                    step="10"
+                    value={speed}
+                    onChange={handleSpeedChange}
+                />
+                <span style={{minWidth: "50px", textAlign: "right"}}>{speed} ms</span>
+
+                <label htmlFor="countSlider" style={{marginLeft: "20px"}}>Elements:</label>
+                <input
+                    id="countSlider"
+                    type="range"
+                    min="10"
+                    max="200"
+                    step="1"
+                    value={count}
+                    onChange={handleCountChange}
+                />
+                <span style={{minWidth: "40px", textAlign: "right"}}>{count}</span>
+
+                <input
+                    type="text"
+                    placeholder="e.g. 12, 5, 33, 7"
+                    value={customInput}
+                    onChange={handleCustomInputChange}
+                    style={{padding: "5px", minWidth: "200px"}}
+                />
+                <button onClick={handleCustomInputSubmit}>Submit Custom</button>
+                <button onClick={handleRandomize}>Randomize</button>
+                <button onClick={handleShuffleOrder}>Shuffle Order</button>
             </div>
         </div>
     );
