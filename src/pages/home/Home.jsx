@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import BarContainer from "../../components/BarContainer/BarContainer";
 
 const Home = () => {
@@ -8,19 +8,20 @@ const Home = () => {
     const [speed, setSpeed] = useState(100);
     const [count, setCount] = useState(100);
     const [customInput, setCustomInput] = useState("");
+    const [algorithm, setAlgorithm] = useState("insertion");
 
     const generateRandomData = (length) => {
-        return Array.from({length}, () => Math.floor(Math.random() * 100) + 1);
+        return Array.from({ length }, () => Math.floor(Math.random() * 100) + 1);
     };
 
     const fetchStages = async (data) => {
         try {
             const response = await fetch("http://localhost:5000/sort", {
                 method: "POST",
-                headers: {"Content-Type": "application/json"},
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     input_data: data,
-                    algorithms: "insertion",
+                    algorithms: algorithm,
                 }),
             });
             const result = await response.json();
@@ -34,7 +35,7 @@ const Home = () => {
     useEffect(() => {
         const randomData = generateRandomData(count);
         fetchStages(randomData);
-    }, [count]);
+    }, [count, algorithm]);
 
     useEffect(() => {
         if (stages.length === 0 || !isPlaying) return;
@@ -104,6 +105,10 @@ const Home = () => {
         fetchStages(shuffled);
     };
 
+    const handleAlgorithmChange = (event) => {
+        setAlgorithm(event.target.value);
+    };
+
     return (
         <div
             style={{
@@ -115,7 +120,7 @@ const Home = () => {
                 fontFamily: "inherit",
             }}
         >
-            <BarContainer data={stages[currentStep] || []} height="75%" width="75%"/>
+            <BarContainer data={stages[currentStep] || []} height="75%" width="75%" />
             <div
                 style={{
                     marginTop: "20px",
@@ -127,14 +132,14 @@ const Home = () => {
                     fontFamily: "inherit",
                 }}
             >
-                <button onClick={handleReset} style={{margin: "5px"}}>Reset</button>
-                <button onClick={handleStepBackward} style={{margin: "5px"}}>Step Backward</button>
-                <button onClick={handlePlayPause} style={{margin: "5px"}}>
+                <button onClick={handleReset} style={{ margin: "5px" }}>Reset</button>
+                <button onClick={handleStepBackward} style={{ margin: "5px" }}>Step Backward</button>
+                <button onClick={handlePlayPause} style={{ margin: "5px" }}>
                     {isPlaying ? "Pause" : "Play"}
                 </button>
-                <button onClick={handleStepForward} style={{margin: "5px"}}>Step Forward</button>
+                <button onClick={handleStepForward} style={{ margin: "5px" }}>Step Forward</button>
 
-                <label htmlFor="speedSlider" style={{marginLeft: "15px"}}>Speed:</label>
+                <label htmlFor="speedSlider" style={{ marginLeft: "15px" }}>Speed:</label>
                 <input
                     id="speedSlider"
                     type="range"
@@ -144,9 +149,9 @@ const Home = () => {
                     value={speed}
                     onChange={handleSpeedChange}
                 />
-                <span style={{minWidth: "50px", textAlign: "right"}}>{speed} ms</span>
+                <span style={{ minWidth: "50px", textAlign: "right" }}>{speed} ms</span>
 
-                <label htmlFor="countSlider" style={{marginLeft: "20px"}}>Elements:</label>
+                <label htmlFor="countSlider" style={{ marginLeft: "20px" }}>Elements:</label>
                 <input
                     id="countSlider"
                     type="range"
@@ -156,14 +161,27 @@ const Home = () => {
                     value={count}
                     onChange={handleCountChange}
                 />
-                <span style={{minWidth: "40px", textAlign: "right"}}>{count}</span>
+                <span style={{ minWidth: "40px", textAlign: "right" }}>{count}</span>
+
+                <label htmlFor="algorithmSelect">Algorithm:</label>
+                <select
+                    id="algorithmSelect"
+                    value={algorithm}
+                    onChange={handleAlgorithmChange}
+                    style={{ padding: "5px" }}
+                >
+                    <option value="insertion">Insertion Sort</option>
+                    <option value="bubble">Bubble Sort</option>
+                    <option value="merge">Merge Sort</option>
+                    <option value="quick">Quick Sort</option>
+                </select>
 
                 <input
                     type="text"
                     placeholder="e.g. 12, 5, 33, 7"
                     value={customInput}
                     onChange={handleCustomInputChange}
-                    style={{padding: "5px", minWidth: "200px"}}
+                    style={{ padding: "5px", minWidth: "200px" }}
                 />
                 <button onClick={handleCustomInputSubmit}>Submit Custom</button>
                 <button onClick={handleRandomize}>Randomize</button>
